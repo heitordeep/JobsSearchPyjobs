@@ -4,8 +4,7 @@ class PyjobsSpider(scrapy.Spider):
     name = 'jobs'
 
     start_urls = [
-        # 'https://www.pyjobs.com.br/jobs/?title=&requirements=&state=24&salary_range=&job_level=2&remote=unknown',
-        'https://www.pyjobs.com.br/jobs/?title=&requirements=&state=24&salary_range=&job_level=&remote=unknown'
+        'https://www.pyjobs.com.br/jobs/'
     ]
 
     def parse(self, response):
@@ -18,7 +17,12 @@ class PyjobsSpider(scrapy.Spider):
         yield from response.follow_all(pagination_links, self.parse)
 
     def parse_jobs(self, response):
+        description = response.xpath('//div[@class="container"]//div[@class="row"]//text()')[44:].getall()
+        clear_description = [i.strip() for i in description]
+        description_to_sanitize = [i for i in clear_description if i != ""] 
         yield {
             'name': response.css('div.container h2::text').get(),
             'company': response.css('.row li::text').get(),
+            'title': response.css('.detalhes-vaga div.container div.row ul li::text')[1:].getall(),
+            'description': description_to_sanitize
         }
