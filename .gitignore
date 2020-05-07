@@ -1,2 +1,7 @@
 venv_scrapy
 __pycache__
+.env
+.vscode
+.pyc
+db.sqlite
+log_error.log
